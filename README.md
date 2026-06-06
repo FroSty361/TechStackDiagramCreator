@@ -1,1 +1,1 @@
-#Tecg Stack Diagram Creator
+# Tech Stack Diagram Creator
