@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Logs</title>
 </head>
 <body>
-$END$
+    <ul>
+    {% for log in logs %}
+        {% if time %}
+            <li>{{time}} : {{log}}</li>
+        {% else %}
+            <li>{{log}}</li>
+        {% endif %}
+    {% endfor %}
+    </ul>
 </body>
 </html>
