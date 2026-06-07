@@ -1,7 +1,9 @@
 from flask import Flask, render_template , request
 from . import home
 import datetime as dt
-from services.githubAPI import get_github_repo
+from services.githubAPI import get_github_repo_data
+from models.models import DiagramRequest
+from models.models import DiagramResponse
 
 @home.route('/')
 def index():
@@ -10,10 +12,15 @@ def index():
 @home.route('/result/', methods=['GET', 'POST'])
 def result():
     if request.method == 'POST':
-        repoOwner = request.form['repoOwner']
-        repoName = request.form['repoName']
+        diagramRequest = DiagramRequest()
 
-        repoData = get_github_repo(repoOwner, repoName)
+        diagramRequest.githubRepoOwner = request.form['repoOwner']
+        diagramRequest.githubRepoName = request.form['repoName']
+
+        diagramResponse = DiagramResponse()
+
+        if get_github_repo_data(diagramRequest, diagramResponse.GithubRepoResponse):
+            print("Hi!")
 
         return render_template("home/result.html")
 
