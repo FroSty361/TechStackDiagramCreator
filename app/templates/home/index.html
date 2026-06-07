@@ -5,8 +5,11 @@
 {% block content %}
 
 <form action="/result/" method="post">
-    <label for="githubURL"></label>
-    <input type="text" id="githubURL" name="githubURL">
+    <label for="repoOwner">GitHub Repository Owner</label>
+    <input type="text" id="repoOwner" name="repoOwner">
+
+    <label for="repoName">GitHub Repository Name</label>
+    <input type="text" id="repoName" name="repoName">
 
     <input type="submit" name="Submit">
 </form>

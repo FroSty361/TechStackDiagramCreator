@@ -1,6 +1,7 @@
 from flask import Flask, render_template , request
 from . import home
 import datetime as dt
+from services.githubAPI import get_github_repo
 
 @home.route('/')
 def index():
@@ -9,9 +10,10 @@ def index():
 @home.route('/result/', methods=['GET', 'POST'])
 def result():
     if request.method == 'POST':
-        githubURL = request.form['githubURL']
+        repoOwner = request.form['repoOwner']
+        repoName = request.form['repoName']
 
-        print(githubURL)
+        repoData = get_github_repo(repoOwner, repoName)
 
         return render_template("home/result.html")
 

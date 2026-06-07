@@ -1,7 +1,8 @@
 class DiagramRequest:
     # Repo
 
-    repoURL = ""
+    githubRepoOwner = ""
+    githubRepoName = ""
 
     # Search Behaviors
 
