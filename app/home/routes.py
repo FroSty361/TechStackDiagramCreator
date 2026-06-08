@@ -22,8 +22,6 @@ def result():
         if get_github_repo_data(diagramRequest, diagramResponse.GithubRepoResponse):
             print("Hi!")
 
-        return render_template("home/result.html")
-
     return render_template("home/result.html")
 
 @home.route('/logs/')

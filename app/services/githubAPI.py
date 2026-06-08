@@ -56,9 +56,6 @@ def get_github_repo_languages(diagramRequest, githubRepoResponse):
         for lang in lang_data:
             githubRepoResponse.languages[lang] = lang_data[lang] / sum
 
-        for key in githubRepoResponse.languages:
-            print(githubRepoResponse.languages[key])
-
         return True
     else:
         return False
