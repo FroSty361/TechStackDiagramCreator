@@ -24,6 +24,15 @@
         <input type="radio" id="getRequirements" name="getRequirements" value="true" />
     </div>
 
+    <div id="diagramLayoutSettingsContainer">
+        <label for="diagramLayout">Layout</label>
+        <select id="diagramLayout" name="diagramLayout" required>
+            {% for layout in layouts %}
+                <option value="{{ layout.name }}">{{ layout.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
     <input type="submit" name="Submit">
 </form>
 

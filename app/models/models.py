@@ -1,6 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 from PIL import Image
+from .enumValues import DiagramLayouts
+
+@dataclass
+class DiagramLayoutRequest:
+    layout = DiagramLayouts.Horizontal
 
 @dataclass
 class DiagramRequest:
@@ -13,6 +18,10 @@ class DiagramRequest:
 
     getLanguages: bool = False
     getRequirements: bool = False
+
+    # Layout
+
+    diagramLayoutRequest: DiagramLayoutRequest = field(default_factory=DiagramLayoutRequest)
 
 @dataclass
 class GithubRepoResponse:

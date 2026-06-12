@@ -6,13 +6,14 @@ from models.models import Diagram
 # Directory Routes
 
 LANGUAGES_IMAGES_DIRECTORY_PATH = "../static/images/languages/"
+REQUIREMENTS_IMAGES_DIRECTORY_PATH = "../static/images/requirements/"
 
 # Diagram
 
 DIAGRAM_WIDTH = 1080
 DIAGRAM_HEIGHT = 1188
 
-def create_diagram():
+def create_diagram(diagramResponse, diagramLayoutRequest):
     diagram = Diagram()
 
     diagramCanvas = create_canvas()
@@ -21,7 +22,7 @@ def create_diagram():
 
     diagram.canvas = diagramCanvas
 
-    # return diagram
+    return diagram
 
 def serve_diagram(diagram):
     diagramCanvas = diagram.canvas
