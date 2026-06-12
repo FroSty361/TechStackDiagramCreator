@@ -5,11 +5,24 @@
 {% block content %}
 
 <form action="/result/" method="post">
-    <label for="repoOwner">GitHub Repository Owner</label>
-    <input type="text" id="repoOwner" name="repoOwner">
 
-    <label for="repoName">GitHub Repository Name</label>
-    <input type="text" id="repoName" name="repoName">
+    <label for="githubInputsContainer">GitHub Connection</label>
+    <div id="githubInputsContainer">
+        <label for="repoOwner">GitHub Repository Owner</label>
+        <input type="text" id="repoOwner" name="repoOwner" required />
+
+        <label for="repoName">GitHub Repository Name</label>
+        <input type="text" id="repoName" name="repoName" required />
+    </div>
+
+    <label for="projectSearchingSettingsContainer">Project Searching Settings</label>
+    <div id="projectSearchingSettingsContainer">
+        <label for="getLanguages">Get Languages</label>
+        <input type="radio" id="getLanguages" name="getLanguages" value="true" />
+
+        <label for="getRequirements">Get Requirements</label>
+        <input type="radio" id="getRequirements" name="getRequirements" value="true" />
+    </div>
 
     <input type="submit" name="Submit">
 </form>

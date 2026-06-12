@@ -7,11 +7,7 @@
 <body>
     <ul>
     {% for log in logs %}
-        {% if time %}
-            <li>{{time}} : {{log}}</li>
-        {% else %}
-            <li>{{log}}</li>
-        {% endif %}
+        <li>{{log[1]}} {{log[0]}}</li>
     {% endfor %}
     </ul>
 </body>

@@ -1,8 +1,9 @@
 import requests
-from models.models import GithubRepoResponse
+from models.models import GithubRepoResponse, DiagramResponse
+import base64
+import datetime as dt
 
-
-def get_github_repo_data(diagramRequest, githubRepoResponse):
+def get_github_repo_data(diagramRequest, diagramResponse):
     owner = diagramRequest.githubRepoOwner
     name = diagramRequest.githubRepoName
 
@@ -15,27 +16,43 @@ def get_github_repo_data(diagramRequest, githubRepoResponse):
     if response.status_code == 200:
         data = response.json()
 
-        githubRepoResponse = GithubRepoResponse()
-
-        githubRepoResponse.githubRepoName = data["name"]
-        githubRepoResponse.githubRepoOwner = data["owner"]["login"]
+        diagramResponse.githubRepoResponse.githubRepoName = data["name"]
+        diagramResponse.githubRepoResponse.githubRepoOwner = data["owner"]["login"]
 
         print(data["name"])
         print(data["owner"]["login"])
 
         if diagramRequest.getLanguages:
-            worked = get_github_repo_languages(diagramRequest, githubRepoResponse)
+            worked = get_github_repo_languages(diagramRequest, diagramResponse)
 
             if not worked:
-                return False
+                time = dt.datetime.now()
 
+                timeString = time.strftime("%H:%M:%S")
 
+                diagramResponse.logs.append((f"Could Not Get GitHub Langauges For Repository '{owner}/{name}'", timeString))
+
+        if diagramRequest.getRequirements:
+            worked = get_github_repo_requirements(diagramRequest, diagramResponse)
+
+            if not worked:
+                time = dt.datetime.now()
+
+                timeString = time.strftime("%H:%M:%S")
+
+                diagramResponse.logs.append((f"Could Not Get GitHub Requirements For Repository '{owner}/{name}'", timeString))
 
         return True
     else:
+        time = dt.datetime.now()
+
+        timeString = time.strftime("%H:%M:%S")
+
+        diagramResponse.logs.append((f"Could Not Get GitHub Repository '{owner}/{name}'", timeString))
+
         return False
 
-def get_github_repo_languages(diagramRequest, githubRepoResponse):
+def get_github_repo_languages(diagramRequest, diagramResponse):
     owner = diagramRequest.githubRepoOwner
     name = diagramRequest.githubRepoName
 
@@ -47,14 +64,49 @@ def get_github_repo_languages(diagramRequest, githubRepoResponse):
     if lang_response.status_code == 200:
         lang_data = lang_response.json()
 
-        githubRepoResponse.recievedLangages = True
+        diagramResponse.githubRepoResponse.recievedLangages = True
 
         sum = 0
         for lang in lang_data:
             sum += lang_data[lang]
 
         for lang in lang_data:
-            githubRepoResponse.languages[lang] = lang_data[lang] / sum
+            diagramResponse.githubRepoResponse.languages[lang] = lang_data[lang] / sum
+
+        return True
+    else:
+        return False
+
+def get_github_repo_requirements(diagramRequest, diagramResponse):
+    owner = diagramRequest.githubRepoOwner
+    name = diagramRequest.githubRepoName
+
+    requirmenrs_url = f"https://api.github.com/repos/{owner}/{name}/contents/requirements.txt"
+    headers = {"Accept": "application/vnd.github+json"}
+
+    req_response = requests.get(requirmenrs_url, headers=headers)
+
+    if req_response.status_code == 200:
+        data = req_response.json()
+        encodedContent = data.get("content", "")
+
+        contentBytes = base64.b64decode(encodedContent)
+        content = contentBytes.decode("utf-8")
+
+        lines = content.split("\n")
+
+        for line in lines:
+            index = line.find("=")
+            if index == -1:
+                index = line.find("~")
+
+            if index != -1:
+                requirement = line[:index - 1]
+
+                diagramResponse.githubRepoResponse.requirements.append(requirement)
+
+        for req in diagramResponse.githubRepoResponse.requirements:
+            print(req)
 
         return True
     else:
