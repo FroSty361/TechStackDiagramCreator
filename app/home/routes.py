@@ -32,8 +32,6 @@ def result():
         Logging.logs = Logging.logs + diagramResponse.logs # Do The First Logs First Then diagramResponese.logs So In Order
 
         if result == True:
-            print("Hi!")
-
             languages = list(diagramResponse.githubRepoResponse.languages.keys())
 
             print(languages)
@@ -42,7 +40,7 @@ def result():
 
             diagramImage = serve_diagram(diagram)
 
-            return render_template("home/result.html", response="Results Found!", languages=languages)
+            return render_template("home/result.html", response="Results Found!", diagram=diagramImage)
 
     return render_template("home/result.html", response="Could Not Get Results")
 

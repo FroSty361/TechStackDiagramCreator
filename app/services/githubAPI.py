@@ -64,7 +64,8 @@ def get_github_repo_languages(diagramRequest, diagramResponse):
     if lang_response.status_code == 200:
         lang_data = lang_response.json()
 
-        diagramResponse.githubRepoResponse.recievedLangages = True
+        if len(lang_data) > 0:
+            diagramResponse.githubRepoResponse.recievedLangages = True
 
         sum = 0
         for lang in lang_data:
@@ -94,6 +95,9 @@ def get_github_repo_requirements(diagramRequest, diagramResponse):
         content = contentBytes.decode("utf-8")
 
         lines = content.split("\n")
+
+        if len(lines) > 0:
+            diagramResponse.githubRepoResponse.recievedRequirements = True
 
         for line in lines:
             index = line.find("=")

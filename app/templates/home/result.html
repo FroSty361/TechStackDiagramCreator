@@ -6,9 +6,9 @@
 
 <h1>{{ response }}</h1>
 
-{% for language in languages %}
-    <img src="{{ url_for('static', filename='images/languages/' + language + '.png') }}">
-{% endfor %}
+    {% if diagram %}
+        <img src="data:image/png;base64,{{ diagram }}" alt="Diagram">
+    {% endif %}
 
 <!-- Logs -->
 
