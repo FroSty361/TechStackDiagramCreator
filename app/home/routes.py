@@ -32,9 +32,9 @@ def result():
         Logging.logs = Logging.logs + diagramResponse.logs # Do The First Logs First Then diagramResponese.logs So In Order
 
         if result == True:
-            languages = list(diagramResponse.githubRepoResponse.languages.keys())
+            requirements = diagramResponse.githubRepoResponse.requirements
 
-            print(languages)
+            print(requirements)
 
             diagram = create_diagram(diagramResponse, diagramRequest.diagramLayoutRequest)
 

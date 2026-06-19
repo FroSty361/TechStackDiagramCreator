@@ -54,10 +54,11 @@ class DiagramResponse:
 
 @dataclass
 class Diagram:
-    canvas: Image = field(default_factory=Image)
+    def __init__(self):
+        self.canvas: Image = field(default_factory=Image)
 
-    width: int = 0
-    height: int = 0
+        self.width: int = 0
+        self.height: int = 0
 
-    totalArea: int = 0
-    remainingArea: float = 0
+        self.totalArea: int = 0
+        self.remainingArea: float = 0

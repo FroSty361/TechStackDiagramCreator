@@ -19,7 +19,7 @@ DIAGRAM_WIDTH = 1080
 DIAGRAM_HEIGHT = 1188
 
 def create_diagram(diagramResponse, diagramLayoutRequest):
-    diagram = Diagram
+    diagram = Diagram()
 
     diagram.width = DIAGRAM_WIDTH
     diagram.height = DIAGRAM_HEIGHT
@@ -49,10 +49,24 @@ def create_diagram(diagramResponse, diagramLayoutRequest):
                 requirementsSize = (int(diagram.width * (1 - languagesToRequirementsRatio)), int(diagram.height))
 
         languagesSection = create_diagram_languages_section(languagesSize, diagramResponse.githubRepoResponse.languages)
-        requirementsSection = create_diagram_requirements_section(requirementsSize)
+        requirementsSection = create_diagram_requirements_section(requirementsSize, diagramResponse.githubRepoResponse.requirements)
+
+        match diagramLayoutRequest.layout:
+            case DiagramLayouts.Horizontal:
+                diagramCanvas.paste(languagesSection, (0, 0))
+                diagramCanvas.paste(requirementsSection, (0, int(languagesSection.height)))
+            case DiagramLayouts.Vertical:
+                diagramCanvas.paste(languagesSection, (0, 0))
+                diagramCanvas.paste(requirementsSection, (int(languagesSection.width), 0))
+
+    elif diagramResponse.githubRepoResponse.recievedLangages and diagramResponse.githubRepoResponse.recievedRequirements == False:
+        languagesSection = create_diagram_languages_section((diagram.width, diagram.height), diagramResponse.githubRepoResponse.languages)
 
         diagramCanvas.paste(languagesSection, (0, 0))
-        diagramCanvas.paste(requirementsSection, (0, int(languagesSection.height)))
+    elif diagramResponse.githubRepoResponse.recievedRequirements and diagramResponse.githubRepoResponse.recievedLangages== False:
+        requirementsSection = create_diagram_requirements_section((diagram.width, diagram.height), diagramResponse.githubRepoResponse.requirements)
+
+        diagramCanvas.paste(requirementsSection, (0, 0))
 
     diagram.canvas = diagramCanvas
 
@@ -82,19 +96,35 @@ def create_diagram_languages_section(size, languages: Dict[str, float]):
     if not languages:
         return canvas
 
-    icon_size_width = int(size[0] / len(languages))
-    icon_size_height = int(size[1] / len(languages))
+    amount = len(languages)
+
+    cols = max(1, math.ceil(math.sqrt(amount)))
+    rows = max(1, math.ceil(amount / cols))
+
+    icon_width = size[0] // cols
+    icon_height = size[1] // rows
 
     xPos = 0
     yPos = 0
+    i = 0
 
     for language, value in languages.items():
         image_path = os.path.join(LANGUAGES_IMAGES_DIRECTORY_PATH, f"{language}.png")
+        image_path = image_path.replace('*', "star")
 
         try:
             language_image = Image.open(image_path)
 
-            language_image.thumbnail((icon_size_width, icon_size_height), Image.Resampling.LANCZOS)
+            image_width = language_image.size[0]
+            image_height = language_image.size[1]
+            ratio = min(icon_width / image_width, icon_height / image_height)
+            new_width = int(image_width * ratio)
+            new_height = int(image_height * ratio)
+
+            language_image = language_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+            x_offset = int(xPos + (icon_width - new_width) // 2)
+            y_offset = int(yPos + (icon_height - new_height) // 2)
 
             if language_image.mode == 'P':
                 transparency = language_image.info.get("transparency")
@@ -103,25 +133,77 @@ def create_diagram_languages_section(size, languages: Dict[str, float]):
                     language_image = language_image.convert('RGBA')
 
             if language_image.mode in ('RGBA', 'LA'):
-                canvas.paste(language_image, (int(xPos), int(yPos)), language_image)
+                canvas.paste(language_image, (x_offset, y_offset), language_image)
             else:
-                canvas.paste(language_image, (int(xPos), int(yPos)))
+                canvas.paste(language_image, (x_offset, y_offset))
 
-            xPos += icon_size_width
+            xPos += icon_width
+            i += 1
 
-            if xPos + icon_size_width > size[0]:
+            if i % cols == 0:
                 xPos = 0
-                yPos += icon_size_height
-
-                if yPos + icon_size_height > size[1]:
-                    break
+                yPos += icon_height
 
         except FileNotFoundError:
-            print(f"Image Not Found For Path {language}")
+            print(f"Image Not Found For {language}")
 
     return canvas
 
-def create_diagram_requirements_section(size):
+def create_diagram_requirements_section(size, requirements: list[str]):
     canvas = Image.new(mode="RGB", size=size, color="blue")
+
+    if not requirements:
+        return canvas
+
+    amount = len(requirements)
+
+    cols = max(1, math.ceil(math.sqrt(amount)))
+    rows = max(1, math.ceil(amount / cols))
+
+    icon_width = size[0] // cols
+    icon_height = size[1] // rows
+
+    xPos = 0
+    yPos = 0
+    i = 0
+
+    for requirement in requirements:
+        image_path = os.path.join(REQUIREMENTS_IMAGES_DIRECTORY_PATH, f"{requirement}.png")
+        image_path = image_path.replace('*', "star")
+
+        try:
+            requirement_image = Image.open(image_path)
+
+            image_width = requirement_image.size[0]
+            image_height = requirement_image.size[1]
+            ratio = min(icon_width / image_width, icon_height / image_height)
+            new_width = int(image_width * ratio)
+            new_height = int(image_height * ratio)
+
+            requirement_image = requirement_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+            x_offset = int(xPos + (icon_width - new_width) // 2)
+            y_offset = int(yPos + (icon_height - new_height) // 2)
+
+            if requirement_image.mode == 'P':
+                transparency = requirement_image.info.get("transparency")
+
+                if isinstance(transparency, bytes):
+                    requirement_image = requirement_image.convert('RGBA')
+
+            if requirement_image.mode in ('RGBA', 'LA'):
+                canvas.paste(requirement_image, (x_offset, y_offset), requirement_image)
+            else:
+                canvas.paste(requirement_image, (x_offset, y_offset))
+
+            xPos += icon_width
+            i += 1
+
+            if i % cols == 0:
+                xPos = 0
+                yPos += icon_height
+
+        except FileNotFoundError:
+            print(f"Image Not Found For {requirement}")
 
     return canvas
